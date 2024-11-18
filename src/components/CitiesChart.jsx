@@ -3,7 +3,7 @@ import { useState } from "react";
 import Chart from "react-apexcharts";
 
 const CitiesChart = () => {
-  const [cityNames, setCityNames] = useState(["", "", "", "", ""]);
+  const [cityNames, setCityNames] = useState([""]);
   const [cititesData, setCititesData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
