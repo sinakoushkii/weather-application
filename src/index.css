@@ -40,4 +40,11 @@ input{
   border-radius: 7px;
   background-color: rgb(41, 104, 220);
   color: white;
+  cursor: pointer;
+}
+.flex{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+
 }

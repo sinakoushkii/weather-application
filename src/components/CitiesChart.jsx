@@ -19,52 +19,44 @@ const CitiesChart = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Filter out empty city names
-    // const validCities = cityNames.filter((city) => city.trim() !== "");
-    // console.log(validCities)
-    // if (validCities.length === 0) {
-    //   alert("Please enter at least one city.");
-    //   return;
-    // }
-
     try {
       const weatherPromises = cityNames.map((city) => {
-        return axios.get(`https://api.weatherapi.com/v1/current.json`, {
+        return axios.get(`https://api.weatherapi.com/v1/history.json`, {
           params: {
             key: wheatherKey,
             q: city,
           },
         });
       });
-  
+
       const resposes = await Promise.all(weatherPromises);
-        resposes.map((response) =>
-          setCititesData((prev) => [...prev, response.data])
-        );
+      resposes.map((response) =>
+        setCititesData((prev) => [...prev, response.data])
+      );
       console.log(resposes);
-      
+
       setIsLoading(false);
     } catch (error) {
       alert(error);
     }
   };
 
-  const chartData={
+  const chartData = {
     options: {
       chart: {
-        id: "basic-bar"
+        id: "basic-bar",
       },
       xaxis: {
-        categories: cititesData.map(data=>data.location.name)
-      }
+        categories: cititesData.map((data) => data.location.name),
+      },
     },
     series: [
       {
         name: "series-1",
-        data: cititesData.map(data=>Math.round(data.current.temp_c))
-      }
-    ]
-  }
+        data: cititesData.map((data) => Math.round(data.current.temp_c)),
+      },
+    ],
+  };
 
   return (
     <div className="form_wrapper">
@@ -84,14 +76,20 @@ const CitiesChart = () => {
           Submitt
         </button>
       </form>
+      <div className="flex">
+        <button className="form_btn" onClick={() => setCityNames((prev) => [...prev, ""])}>
+          add another city
+        </button>
+        <button className="form_btn" onClick={()=>setCityNames(["", "", "", "", ""])}>Clear The Form</button>
+      </div>
       {isLoading && <h3>Loading...</h3>}
       <Chart
-          options={chartData.options}
-          series={chartData.series}
-          type="bar"
-          height={350}
-        />
-      
+        options={chartData.options}
+        series={chartData.series}
+        type="bar"
+        height={350}
+      />
+
       {/* {cititesData &&
         cititesData.map((data, index) => (
           <h2 key={index}>
