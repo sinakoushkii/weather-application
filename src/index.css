@@ -4,7 +4,7 @@
   align-items: center;
   /* justify-content: space-between; */
   max-width: 600px;
-  height: 50vh;
+ 
   border: 2px solid black;
   border-radius: 10px;
   margin: 0 auto;
@@ -12,4 +12,32 @@
 input{
   padding: 7px;
   margin-top: 1rem;
+  border-radius: 6px;
+}
+.form_wrapper{
+  margin: 0 auto;
+  border-bottom: 2px solid black;
+}
+.input_wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 1rem;
+
+}
+.form_wrapper form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.form_btn{
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.9rem;
+  border: none;
+  outline: none;
+  border-radius: 7px;
+  background-color: rgb(41, 104, 220);
+  color: white;
 }

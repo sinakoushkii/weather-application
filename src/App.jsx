@@ -1,11 +1,12 @@
 import axios from "axios";
 import {useState } from "react";
+import CitiesChart from "./components/CitiesChart";
 
 const App = () => {
   const wheatherKey = import.meta.env.VITE_WEATHER_API_KEY;
   const [cityName, setCityName] = useState("");
   const [cityData, setCityData] = useState(null);
-  
+
   const name = cityData?.location?.name;
   const temp_c = cityData?.current?.temp_c;
 
@@ -23,6 +24,7 @@ const App = () => {
 
   return (
     <div className="container">
+      <CitiesChart />
       <form onSubmit={(e) => submitHandler(e)}>
         <input
           value={cityName}
