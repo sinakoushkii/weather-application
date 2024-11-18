@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import Chart from "react-apexcharts";
 
 const CitiesChart = () => {
   const [cityNames, setCityNames] = useState(["", "", "", "", ""]);
@@ -41,11 +42,29 @@ const CitiesChart = () => {
           setCititesData((prev) => [...prev, response.data])
         );
       console.log(resposes);
+      
       setIsLoading(false);
     } catch (error) {
       alert(error);
     }
   };
+
+  const chartData={
+    options: {
+      chart: {
+        id: "basic-bar"
+      },
+      xaxis: {
+        categories: cititesData.map(data=>data.location.name)
+      }
+    },
+    series: [
+      {
+        name: "series-1",
+        data: cititesData.map(data=>Math.round(data.current.temp_c))
+      }
+    ]
+  }
 
   return (
     <div className="form_wrapper">
@@ -66,12 +85,19 @@ const CitiesChart = () => {
         </button>
       </form>
       {isLoading && <h3>Loading...</h3>}
-      {cititesData &&
+      <Chart
+          options={chartData.options}
+          series={chartData.series}
+          type="bar"
+          height={350}
+        />
+      
+      {/* {cititesData &&
         cititesData.map((data, index) => (
           <h2 key={index}>
             {data.location.name}: {Math.round(data.current.temp_c)}
           </h2>
-        ))}
+        ))} */}
     </div>
   );
 };
