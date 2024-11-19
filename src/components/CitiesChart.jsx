@@ -32,7 +32,10 @@ const CitiesChart = () => {
     const allCities=cityNames
     const filteredCities=allCities.filter(city=>city!==cityName)
     setCityNames(filteredCities)
-    // handleSubmit()
+  
+    const allCitiesData=cititesData
+    const filteredCitiesData=allCitiesData.filter(item=>item.city!==cityName)
+    setCititesData(filteredCitiesData)
   }
 
   // Extract the dates (assumes all cities have the same dates)

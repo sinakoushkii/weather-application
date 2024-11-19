@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const weatherKey = import.meta.env.VITE_WEATHER_API_KEY;
+
 export const getCurrentDate = () => {
   const today = new Date();
   const dateOnly = today.toISOString().split("T")[0];
