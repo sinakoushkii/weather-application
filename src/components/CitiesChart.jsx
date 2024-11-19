@@ -1,13 +1,14 @@
-import axios from "axios";
-import { useState } from "react";
-import Chart from "react-apexcharts";
+// import axios from "axios";
+import { useState } from "react";;
+import { getLastFiveDaysTemperatureForCities } from "../utility";
+import ReactApexChart from "react-apexcharts";
 
 const CitiesChart = () => {
   const [cityNames, setCityNames] = useState([""]);
   const [cititesData, setCititesData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const wheatherKey = import.meta.env.VITE_WEATHER_API_KEY;
+  //   const wheatherKey = import.meta.env.VITE_WEATHER_API_KEY;
 
   const handleCityNameChange = (index, value) => {
     const newCityNames = [...cityNames];
@@ -19,43 +20,62 @@ const CitiesChart = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    try {
-      const weatherPromises = cityNames.map((city) => {
-        return axios.get(`https://api.weatherapi.com/v1/history.json`, {
-          params: {
-            key: wheatherKey,
-            q: city,
-          },
-        });
-      });
+    const result = await getLastFiveDaysTemperatureForCities(cityNames);
+    // console.log(result)
+    const finallResult = Object.entries(result).map(([key, value]) => ({
+      city: key,
+      temperatures: value,
+    }));
+    
+    // console.log(finallResult);
+    setCititesData(finallResult);
 
-      const resposes = await Promise.all(weatherPromises);
-      resposes.map((response) =>
-        setCititesData((prev) => [...prev, response.data])
-      );
-      console.log(resposes);
-
-      setIsLoading(false);
-    } catch (error) {
-      alert(error);
-    }
+    setIsLoading(false);
   };
 
-  const chartData = {
-    options: {
-      chart: {
-        id: "basic-bar",
-      },
-      xaxis: {
-        categories: cititesData.map((data) => data.location.name),
+  // Extract the dates (assumes all cities have the same dates)
+  const dates = cititesData[0]?.temperatures.map((data) => data.date) || [];
+
+  // Prepare the series data for the chart
+  const chartSeries = cititesData.map((cityData) => ({
+    name: cityData.city, // City name as the series name
+    data: cityData.temperatures.map((tempData) => tempData.temperature), // Temperatures for the city
+  }));
+
+  // Chart options
+  const chartOptions = {
+    chart: {
+      id: "temperature-chart",
+      type: "line",
+      zoom: {
+        enabled: true,
       },
     },
-    series: [
-      {
-        name: "series-1",
-        data: cititesData.map((data) => Math.round(data.current.temp_c)),
+    xaxis: {
+      categories: dates, // Dates on the X-axis
+      title: {
+        text: "Date",
       },
-    ],
+    },
+    yaxis: {
+      title: {
+        text: "Temperature (°C)",
+      },
+    },
+    title: {
+      text: "Temperature Over Last 5 Days for Each City",
+      align: "center",
+    },
+    stroke: {
+      curve: "smooth", // Smooth lines
+    },
+    markers: {
+      size: 5, // Size of markers on the lines
+    },
+    tooltip: {
+      shared: true,
+      intersect: false,
+    },
   };
 
   return (
@@ -77,18 +97,34 @@ const CitiesChart = () => {
         </button>
       </form>
       <div className="flex">
-        <button className="form_btn" onClick={() => setCityNames((prev) => [...prev, ""])}>
+        <button
+          className="form_btn"
+          onClick={() => setCityNames((prev) => [...prev, ""])}
+        >
           add another city
         </button>
-        <button className="form_btn" onClick={()=>setCityNames(["", "", "", "", ""])}>Clear The Form</button>
+        <button
+          className="form_btn"
+          onClick={() => setCityNames(["", "", "", "", ""])}
+        >
+          Clear The Form
+        </button>
       </div>
       {isLoading && <h3>Loading...</h3>}
-      <Chart
+      {cititesData && (
+        <ReactApexChart
+        options={chartOptions}
+        series={chartSeries}
+        type="line"
+        height={350}
+      />
+      )}
+      {/* <Chart
         options={chartData.options}
         series={chartData.series}
         type="bar"
         height={350}
-      />
+      /> */}
 
       {/* {cititesData &&
         cititesData.map((data, index) => (
