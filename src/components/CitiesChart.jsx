@@ -1,19 +1,17 @@
 // import axios from "axios";
-import { useState } from "react";;
+import { useState } from "react";
 import { getLastFiveDaysTemperatureForCities } from "../utility";
 import ReactApexChart from "react-apexcharts";
 
 const CitiesChart = () => {
-  const [cityNames, setCityNames] = useState([""]);
+  const [city, setCity] = useState("");
+  const [cityNames, setCityNames] = useState([]);
   const [cititesData, setCititesData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  //   const wheatherKey = import.meta.env.VITE_WEATHER_API_KEY;
-
-  const handleCityNameChange = (index, value) => {
-    const newCityNames = [...cityNames];
-    newCityNames[index] = value;
-    setCityNames(newCityNames);
+  const handleCityNameChange = () => {
+    setCityNames((prev) => setCityNames([...prev, city]));
+    setCity("");
   };
 
   const handleSubmit = async (e) => {
@@ -21,17 +19,20 @@ const CitiesChart = () => {
     setIsLoading(true);
 
     const result = await getLastFiveDaysTemperatureForCities(cityNames);
-    // console.log(result)
     const finallResult = Object.entries(result).map(([key, value]) => ({
       city: key,
       temperatures: value,
     }));
-    
-    // console.log(finallResult);
-    setCititesData(finallResult);
 
+    setCititesData(finallResult);
     setIsLoading(false);
   };
+
+  const handleDeleteCity=(cityName)=>{
+    const allCities=cityNames
+    const filteredCities=allCities.filter(city=>city!==cityName)
+    setCityNames(filteredCities)
+  }
 
   // Extract the dates (assumes all cities have the same dates)
   const dates = cititesData[0]?.temperatures.map((data) => data.date) || [];
@@ -79,59 +80,49 @@ const CitiesChart = () => {
   };
 
   return (
-    <div className="form_wrapper">
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <div className="input_wrapper">
-          {cityNames.map((cityName, index) => (
+    <div className="data_wrapper">
+      <div className="flex space-between">
+        <form onSubmit={(e) => handleSubmit(e)}>
+          <div className="input_wrapper">
             <input
-              key={index}
               type="text"
-              value={cityName}
-              onChange={(e) => handleCityNameChange(index, e.target.value)}
-              placeholder={`Enter City ${index + 1}`}
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder={`Enter City name`}
             />
-          ))}
+          </div>
+          <button className="form_btn" type="submit">
+            Submitt
+          </button>
+        </form>
+        <div className="cities_list">
+          <ul>
+            {cityNames &&
+              cityNames.map((city) => (
+                <li key={city}>
+                  {city}
+                  <span onClick={()=>handleDeleteCity(city)} className="delete_btn">X</span>
+                </li>
+              ))}
+          </ul>
         </div>
-        <button className="form_btn" type="submit">
-          Submitt
-        </button>
-      </form>
-      <div className="flex">
-        <button
-          className="form_btn"
-          onClick={() => setCityNames((prev) => [...prev, ""])}
-        >
-          add another city
-        </button>
-        <button
-          className="form_btn"
-          onClick={() => setCityNames(["", "", "", "", ""])}
-        >
-          Clear The Form
-        </button>
+        <div className="flex">
+          <button className="form_btn" onClick={() => handleCityNameChange()}>
+            add city
+          </button>
+        </div>
       </div>
-      {isLoading && <h3>Loading...</h3>}
+
+      {isLoading && <h3 className="loading">Loading...</h3>}
       {cititesData && (
         <ReactApexChart
-        options={chartOptions}
-        series={chartSeries}
-        type="line"
-        height={350}
-      />
+          options={chartOptions}
+          series={chartSeries}
+          type="line"
+          height={350}
+          width={600}
+        />
       )}
-      {/* <Chart
-        options={chartData.options}
-        series={chartData.series}
-        type="bar"
-        height={350}
-      /> */}
-
-      {/* {cititesData &&
-        cititesData.map((data, index) => (
-          <h2 key={index}>
-            {data.location.name}: {Math.round(data.current.temp_c)}
-          </h2>
-        ))} */}
     </div>
   );
 };
