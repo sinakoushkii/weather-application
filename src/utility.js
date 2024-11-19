@@ -1,10 +1,12 @@
 import axios from "axios";
 
+const weatherKey = import.meta.env.VITE_WEATHER_API_KEY;
 export const getCurrentDate = () => {
   const today = new Date();
   const dateOnly = today.toISOString().split("T")[0];
   return dateOnly;
 };
+
 export const getLastFiveDates = () => {
   const dates = [];
   for (let i = 0; i < 5; i++) {
@@ -19,7 +21,22 @@ export const getLastFiveDates = () => {
   return dates;
 };
 
-const weatherKey = import.meta.env.VITE_WEATHER_API_KEY;
+export const getFirstAndLastDayOfCurrentMonth=()=>{
+  const now = new Date();
+
+  // Get the first day of the current month
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // Get the last day of the current month
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  // Format the date as YYYY-MM-DD without timezone issues
+  const formatDate = (date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return {
+    firstDay: formatDate(firstDay),
+    lastDay: formatDate(lastDay),
+  };
+}
 
 export const getLastFiveDaysTemperatureForCities = async (cities) => {
   const cityTemperatures = {};
